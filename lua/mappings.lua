@@ -25,3 +25,15 @@ map("n", "<leader>pp", function()
   require("conform").format({ async = true, lsp_fallback = true })
 end, { desc = "Format " })
 
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    local opts = { buffer = ev.buf, noremap = true, silent = true }
+    map('n', 'gr', vim.lsp.buf.references, opts)
+    map('n', 'gI', vim.lsp.buf.implementation, opts)
+    map('n', 'gd', vim.lsp.buf.definition, opts)
+    map('n', 'gD', vim.lsp.buf.declaration, opts)
+    map('n', 'K', vim.lsp.buf.hover, opts)
+    -- Añade más mapeos según necesites
+  end,
+})
