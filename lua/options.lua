@@ -14,8 +14,8 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   pattern = "*",
   callback = function()
     vim.highlight.on_yank({
-      higroup = "IncSearch", -- Puedes cambiarlo a otro highlight group si quieres
-      timeout = 200          -- Tiempo en milisegundos del highlight
+      higroup = "IncSearch",
+      timeout = 200
     })
   end,
 })

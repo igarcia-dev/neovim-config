@@ -1,12 +1,13 @@
--- This file needs to have same structure as nvconfig.lua 
+-- This file needs to have same structure as nvconfig.lua
 -- https://github.com/NvChad/ui/blob/v3.0/lua/nvconfig.lua
--- Please read that file to know all available options :( 
 
 ---@type ChadrcConfig
 local M = {}
 
 M.base46 = {
-	theme = "chadracula",
+	clipboard = "unnamedplus",
+    theme = "solarized_dark",
+    transparency= true,
 
 	-- hl_override = {
 	-- 	Comment = { italic = true },
@@ -21,4 +22,14 @@ M.base46 = {
 --      }
 --}
 
+M.ui = {
+  statusline = {
+    overriden_modules = function(modules)
+      modules[2] = function()
+        return vim.fn.expand("%:p")  -- full file path
+      end
+    end,
+  },
+}
 return M
+
