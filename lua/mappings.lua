@@ -94,3 +94,97 @@ map("o", "M", "'", { desc = "Remap ' to M" })
 map("n", "<C-f>", function()
   print(vim.fn.expand("%:p"))
 end, { desc = "Print full file path" })
+
+
+map("n", "gb", function()
+  local line = vim.fn.line(".")
+  local file = vim.fn.expand("%:p")
+
+  -- Ejecuta git blame para esa línea y captura la salida
+  local result = vim.fn.system(
+    string.format("git blame -L %d,%d --line-porcelain %s", line, line, file)
+  )
+
+  if vim.v.shell_error ~= 0 or result == "" then
+    vim.notify("git blame failed for this line", vim.log.levels.ERROR, { title = "Git blame" })
+    return
+  end
+
+  local author = result:match("author (.-)\n") or "unknown"
+  local date   = result:match("author%-time (%d+)\n")
+
+  if date then
+    date = os.date("%Y-%m-%d %H:%M:%S", tonumber(date))
+  else
+    date = "unknown"
+  end
+
+  local msg = string.format("Blame → %s @ %s (line %d)", author, date, line)
+  vim.notify(msg, vim.log.levels.INFO, { title = "Git blame" })
+end, { desc = "Show git blame of current line" })
+
+
+-- Open current file in Typora in background
+map("n", "<C-t>", function()
+  local current_file = vim.fn.expand("%:p")
+  vim.fn.jobstart({"typora", current_file}, {detach = true})
+end, { desc = "Open current file in Typora" })
+
+
+map("n", "gs", function()
+  local line = vim.fn.line(".")
+  local file = vim.fn.expand("%:p")
+
+  -- 1) Sacar el SHA de la línea actual
+  local blame = vim.fn.system(
+    string.format("git blame -L %d,%d --line-porcelain %s", line, line, file)
+  )
+
+  if vim.v.shell_error ~= 0 or blame == "" then
+    vim.notify("git blame failed", vim.log.levels.ERROR, { title = "Git show" })
+    return
+  end
+
+  local sha = blame:match("^(%w+)")
+  if not sha then
+    vim.notify("No SHA found in blame output", vim.log.levels.ERROR, { title = "Git show" })
+    return
+  end
+
+  -- 2) Abrir split con buffer NUEVO (sin tocar el actual)
+  vim.cmd("botright split")
+  vim.cmd("enew")
+  vim.cmd("setlocal buftype=nofile bufhidden=wipe noswapfile")
+
+  -- 3) Ejecutar git show y volcarlo en el buffer
+  local output = vim.fn.systemlist("git show " .. sha)
+
+  if vim.v.shell_error ~= 0 or #output == 0 then
+    vim.notify("git show failed", vim.log.levels.ERROR, { title = "Git show" })
+    return
+  end
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
+
+  -- 4) Activar resaltado de sintaxis para diffs
+  -- Si tienes plugin tipo vim-git, puedes probar 'git'
+  vim.bo.filetype = "diff"
+
+  -- opcional: nombre virtual del buffer
+  vim.api.nvim_buf_set_name(0, "git-show://" .. sha)
+
+  vim.notify("git show " .. sha, vim.log.levels.INFO, { title = "Git show" })
+end, { desc = "Show git commit for current line (diff)" })
+
+local zoomed = false
+
+vim.keymap.set("n", "<C-w>z", function()
+  if not zoomed then
+    vim.cmd("wincmd |")
+    vim.cmd("wincmd _")
+    zoomed = true
+  else
+    vim.cmd("wincmd =")
+    zoomed = false
+  end
+end, { desc = "Toggle Zoom" })
