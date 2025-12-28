@@ -91,5 +91,15 @@ return {
     { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
     { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
 }
-  }
+  },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      triggers = {
+        { "<auto>", mode = "nxsot" },
+        { "º", mode = { "n", "v" } },
+      },
+    },
+  },
 }

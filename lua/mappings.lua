@@ -10,7 +10,7 @@ map('n', '<leader>m', ':Mason<CR>', { noremap = true, silent = true })
 map('n', '<leader>l', ':Lazy<CR>', { noremap = true, silent = true })
 
 map('n', '<leader>n', ':enew<CR>', { noremap = true, silent = true, desc = 'Nuevo buffer' })
-map('n', 'gb', '[{')  -- ir al inicio del bloque
+map('n', 'gi', '[{')  -- ir al inicio del bloque
 map('n', 'gn', ']}')  -- ir al final del bloque0
 
 -- NORMAL mode: Ctrl+Shift+J / K to move line down/up
@@ -53,6 +53,7 @@ map("n", "W", "$", { desc = "End of line" })
 map("n", "B", "^", { desc = "Start of line" })
 
 map("n", "-", "/", { desc = "Search" })
+map("o", "-", "/", { desc = "Search motion" })
 
 map("n", "gw", function()
   vim.diagnostic.goto_next()
@@ -78,17 +79,19 @@ vim.keymap.set("n", "<leader>ff", function()
 end, { desc = "Search in current file" })
 
 
-map("n", "º", "~", { desc = "Toggle case" })
-map("n", "¡", "\"", { desc = "Buffer" })
+map("n", "º", "\"", { desc = "Register" })
 
 -- Normal mode
-map("n", "M", "'", { desc = "Remap ' to M" })
+map("n", "M", "m", { desc = "Set mark" })
+map("n", "mm", "``", { desc = "Jump to last position" })
+map("n", "m", "'", { desc = "Go to mark" })
 
 -- Visual mode
-map("v", "M", "'", { desc = "Remap ' to M" })
+map("v", "M", "m", { desc = "Set mark" })
+map("v", "m", "'", { desc = "Go to mark" })
 
 -- Operator-pending mode (ej: d', y', c')
-map("o", "M", "'", { desc = "Remap ' to M" })
+map("o", "m", "'", { desc = "Go to mark" })
 
 
 map("n", "<C-f>", function()
